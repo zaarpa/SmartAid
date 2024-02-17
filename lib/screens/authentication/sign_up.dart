@@ -1,7 +1,7 @@
+import 'package:design_project_1/screens/patientInterface/profile/profile.dart';
 import 'package:flutter/material.dart';
 import '../../services/authServices/auth.dart';
 import '../../utilities/squareTile.dart';
-import 'chooseRole.dart';
 import 'emailVerificationPage.dart';
 class SignUp extends StatefulWidget {
 
@@ -173,7 +173,7 @@ class _SignUpState extends State<SignUp> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => RoleSelectionPage(),
+                                        builder: (context) => ProfileScreen(),
                                       ),
                                     );
                                  }

@@ -57,6 +57,12 @@ class DatabaseService {
       'role': role
     });
   }
+
+  Future getPreExistingConditions() async {
+    DocumentSnapshot user = await patientCollection.doc(uid).get();
+    List<String> preExistingConditions = user['preExistingConditions'].cast<String>();
+    return preExistingConditions;
+  }
   //get user doc stream
   Stream<DocumentSnapshot> get userDoc {
     return userCollection.doc(uid).snapshots();

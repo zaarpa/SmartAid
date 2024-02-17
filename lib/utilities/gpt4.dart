@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'gptkey.dart' as Env;
 String openaiKey = Env.api_key;
 
-Future<String> promptTesting(var disease, var existingConditions ,int water_max, double protein_max ) async {
+Future<String> generateDietPlan(var disease, var existingConditions ,double water_max, double protein_max ) async {
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $openaiKey',
@@ -96,4 +96,45 @@ Future<String> ReportSummarizer(String url) async {
   } else {
     throw Exception('Failed to make POST request');
   }
+}
+
+Future<String> chatWithAi(List<Map<String,dynamic>>context,String message)  async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $openaiKey',
+    };
+
+    context.add({
+      'role':'user',
+      'content':'keeping in mind the given context answer the following question : \n ${message}'
+    });
+
+    print(context);
+    print(context.length);
+    var body = jsonEncode({
+      "model": "gpt-4",
+      "messages": context,
+      "temperature": 1,
+      "top_p": 1,
+      "n": 1,
+      "stream": false,
+      "max_tokens": 350,
+      "presence_penalty": 0,
+      "frequency_penalty": 0
+    });
+
+    var response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      return data['choices'][0]['message']['content'];
+    } else {
+      throw Exception('Failed to make POST request');
+    }
+
 }

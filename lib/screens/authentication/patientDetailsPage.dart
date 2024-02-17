@@ -56,14 +56,6 @@ class _PatientDetailsPageState extends State<PatientDetailsPage> {
       ),
       body: Container(
         height: 800,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            // colors: [Colors.white70, Colors.blue.shade200],
-            colors: [Colors.white70, Colors.blue.shade100],
-          ),
-        ),
         padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
         child: Form(
           key: _formKey,

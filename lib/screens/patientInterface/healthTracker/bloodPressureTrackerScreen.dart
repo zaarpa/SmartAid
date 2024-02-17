@@ -52,13 +52,6 @@ class _BloodPressureTrackerState extends State<BloodPressureTracker> {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white70, Colors.blue.shade100],
-          ),
-        ),
         child: Stack(
           children: <Widget>[
             // Background image with blur

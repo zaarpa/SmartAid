@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:design_project_1/screens/authentication/patientDetailsPage.dart';
 import 'package:design_project_1/screens/authentication/sign_in.dart';
+import 'package:design_project_1/screens/patientInterface/profile/InfromationSelectionPage.dart';
+import 'package:design_project_1/screens/patientInterface/profile/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +10,6 @@ import '../../models/UserModel.dart';
 import '../../services/authServices/auth.dart';
 import '../../main.dart';
 import '../wrapper.dart';
-import 'chooseRole.dart';
 
 class EmailVerificationPage extends StatefulWidget {
   final String name;
@@ -46,7 +48,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
 
       timer?.cancel();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  RoleSelectionPage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  PatientDetailsPage()));
     }
   }
 

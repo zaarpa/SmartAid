@@ -51,13 +51,6 @@ class _UrineTrackerState extends State<UrineTracker> {
       body: SingleChildScrollView(
         child: Container(
           height: 800,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.white70, Colors.blue.shade100],
-            ),
-          ),
           child: Stack(
             children: <Widget>[
               Padding(
