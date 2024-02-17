@@ -7,6 +7,8 @@ import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
 
+import '../healthTracker/tracker.dart';
+
 import '../profile/InfromationSelectionPage.dart';
 
 
@@ -44,12 +46,12 @@ class _HomeState extends State<Home> {
       // Tracker(),
       // RequestEmergencyScreen(),
       // DoctorFinder(),
-      // AppointmentListPage(),
-      Text('Tracker'),
+
+
+      Tracker(),
       Text('RequestEmergencyScreen'),
       Text('DoctorFinder'),
-      Text('Chat Box'),
-      // Text('InformationSelectionScreen'),
+     Text('Chat Box'),
       InformationSelectionScreen(),
 
     ];
