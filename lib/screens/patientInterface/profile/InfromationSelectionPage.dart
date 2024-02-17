@@ -1,4 +1,5 @@
 // import 'package:design_project_1/screens/patientInterface/Storage/Upload.dart';
+import 'package:design_project_1/screens/patientInterface/Storage/Upload.dart';
 import 'package:flutter/material.dart';
 import 'package:design_project_1/screens/patientInterface/profile/profile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -45,6 +46,7 @@ class _InformationSelectionScreenState extends State<InformationSelectionScreen>
     );
     },
     ),
+
     ListTile(
     contentPadding: EdgeInsets.all(10.0),
     tileColor: Colors.blue.shade50,
@@ -55,6 +57,8 @@ class _InformationSelectionScreenState extends State<InformationSelectionScreen>
     fontSize: 18.0,
     ),),
     onTap: () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const UploadFile()));
+
     },
     ),
 
