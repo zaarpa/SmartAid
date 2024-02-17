@@ -8,6 +8,7 @@ import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 import '../healthTracker/tracker.dart';
+
 import '../profile/InfromationSelectionPage.dart';
 
 
@@ -45,13 +46,14 @@ class _HomeState extends State<Home> {
       // Tracker(),
       // RequestEmergencyScreen(),
       // DoctorFinder(),
-      // AppointmentListPage(),
+
 
       Tracker(),
       Text('RequestEmergencyScreen'),
       Text('DoctorFinder'),
-      Text('AppointmentListPage'),
+     Text('Chat Box'),
       InformationSelectionScreen(),
+
     ];
   }
 
@@ -63,8 +65,8 @@ class _HomeState extends State<Home> {
           inactiveIcon:  Icon(Icons.emergency , color: Colors.grey)),
       PersistentBottomNavBarItem(icon: Icon(Icons.home,color:Colors.indigo),
           inactiveIcon:  Icon(Icons.home , color: Colors.grey)),
-      PersistentBottomNavBarItem(icon: Icon(Icons.calendar_month,color:Colors.indigo),
-          inactiveIcon:  Icon(Icons.calendar_month , color: Colors.grey)),
+      PersistentBottomNavBarItem(icon: Icon(Icons.chat,color:Colors.indigo),
+          inactiveIcon:  Icon(Icons.chat , color: Colors.grey)),
       PersistentBottomNavBarItem(icon: Icon(Icons.person,color:Colors.indigo),
           inactiveIcon:  Icon(Icons.person , color: Colors.grey))
     ];
