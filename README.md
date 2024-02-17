@@ -10,7 +10,7 @@ This is the main branch for SmartAid. Commits from individual branches are pushe
 
 - **Authentication:**
   - Firebase authentication was used to implement sign in features including Google OAuth.
-  - 
+    
 - **Chat with SmartAid**
   - Users can talk to the chatbot which has been implemented using GPT-4.
   - Users can get help and assistance regarding primary treatments in any emergency situation.
