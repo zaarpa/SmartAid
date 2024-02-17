@@ -47,18 +47,6 @@ class _InformationSelectionScreenState extends State<InformationSelectionScreen>
     ),
     ListTile(
     contentPadding: EdgeInsets.all(10.0),
-    tileColor: Colors.grey.shade200,
-    leading: Icon(Icons.medical_services,
-    size: 40.0),
-    title: Text('Medications',
-    style: TextStyle(
-    fontSize: 18.0,
-    ),),
-    onTap: () {
-    },
-    ),
-    ListTile(
-    contentPadding: EdgeInsets.all(10.0),
     tileColor: Colors.blue.shade50,
     leading: Icon(Icons.description,
     size: 40.0),
