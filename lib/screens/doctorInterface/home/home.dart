@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:design_project_1/services/authServices/auth.dart';
-
+import '../../../utilities/gpt4.dart' as GPT;
 
 void main() {
   runApp(Home());
@@ -24,11 +24,12 @@ class _HomeState extends State<Home> {
   // NotificationServices notificationServices = NotificationServices();
   final AuthService _auth = AuthService();
   var emergencyDoctor = false;
+  String promptTesting ='';
   int _currentIndex = 2;
   @override
     void initState() {
     super.initState();
-    setState(() {
+    setState(()  {
       _currentIndex = 2;
     });
     // notificationServices.requestNotificationPermission();
@@ -62,6 +63,20 @@ class _HomeState extends State<Home> {
     return [
       // ScheduleScreen(),
       // AppointmentScreen(),
+      FutureBuilder<String>(
+        future: GPT.promptTesting("Kidney Disease",['high blood pressure'],600,33), // replace with your async function
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else {
+            if (snapshot.hasError)
+              return Text('Error: ${snapshot.error}');
+            else
+              return Text('Loaded: ${snapshot.data}');
+          }
+        },
+      ),
+      Text('Appointment'),
       Container(
         color: Colors.transparent,
         // child: Feed(),
