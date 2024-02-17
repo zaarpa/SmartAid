@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:design_project_1/services/trackerServices/foodSelection.dart';
-
 import '../../../models/foodModel.dart';
 import '../../../services/trackerServices/healthTrackerService.dart';
+import '../../../utilities/gpt4.dart';
 import 'kidneyDiseaseTracker/kidneyTracker.dart';
+import 'dietPlanViewer.dart';
 
 class FoodSelectionScreen extends StatefulWidget {
   const FoodSelectionScreen({super.key});
@@ -21,6 +22,8 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
   List<String> searchResults = [];
   List<Food> selectedFoods = [];
   double totalProtein = 0;
+  double maxProtein = 0;
+  int maxWater = 0;
   @override
   void initState() {
     super.initState();
@@ -32,11 +35,21 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
     setState(() {
       totalProtein = proteinData;
     });
+double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxProteinLimit();
+    setState(() {
+      maxProtein = maxProteinData;
+    });
+    int maxWaterData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxWaterLimit();
+    setState(() {
+      maxWater = maxWaterData;
+    });
     await healthTrackerService().loadSelectedFoods().then((foods) {
       setState(() {
         selectedFoods = foods as List<Food>;
       });
     });
+
+
   }
 
 
@@ -55,6 +68,7 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.blue.shade900,
@@ -78,7 +92,32 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
               ),
               child: Column(
                 children: [
-
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        // Display maximum protein limit
+                        Text(
+                          'Max Protein: ${maxProtein.toStringAsFixed(2)} g',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(width: 20), // Add some space between the text and the button
+                        // "Get Diet Plan" button
+                        ElevatedButton(
+                          onPressed: () async {
+                            String prompt = await promptTesting('Kidney Disease', 'None', maxWater, maxProtein);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DietPlanViewer(prompt: prompt),
+                              ),
+                            );
+                          },
+                          child: Text('Get Diet Plan'),
+                        ),
+                      ],
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text("Track today's protein intake", style: TextStyle(fontSize: 20,color: Colors.grey.shade800)),

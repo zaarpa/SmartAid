@@ -12,6 +12,7 @@ class _WaterTrackerPageState extends State<WaterTrackerPage> {
   int totalGlasses = 0;
   int totalMl = 0;
   int mlPerGlass = 250;
+  double maxWater = 0;
 
   @override
   void initState() {
@@ -25,6 +26,29 @@ class _WaterTrackerPageState extends State<WaterTrackerPage> {
       totalMl = waterData;
       totalGlasses = (totalMl / mlPerGlass).round();
     });
+    double maxWaterLimit = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxWaterLimit();
+    setState(() {
+      maxWater = maxWaterLimit;
+    });
+    if (totalMl > maxWaterLimit) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Warning'),
+            content: Text('You have exceeded your daily water limit'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void addGlass() async {
@@ -82,6 +106,12 @@ class _WaterTrackerPageState extends State<WaterTrackerPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Padding(padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'Max Water Limit: ${maxWater.toStringAsFixed(2)} ml',
+                  style: TextStyle(fontSize: 20),
+                ),
+                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text("Track today's water intake", style: TextStyle(fontSize: 20,color: Colors.grey.shade800)),

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:design_project_1/utilities/squareTile.dart';
 import 'package:design_project_1/models/diseaseViewModel.dart';
 
 import 'kidneyDiseaseTracker/kidneyTracker.dart';
@@ -15,10 +14,12 @@ class Tracker extends StatefulWidget {
 class disease{
   String name;
   String icon;
-  disease(this.name, this.icon);
+  double maxProteinLimit;
+  double maxWaterLimit;
+  disease(this.name, this.icon, this.maxProteinLimit, this.maxWaterLimit);
 }
 class _TrackerState extends State<Tracker> {
-  List<disease> availableDiseases = [disease('Kidney Disease', 'assets/images/kidney.png'), disease('Diabetes', 'assets/images/diabetes.png'), disease('Heart Disease', 'assets/images/heart.png')];
+  List<disease> availableDiseases = [disease('Kidney Disease', 'assets/images/kidney.png', 0, 0), disease('Diabetes', 'assets/images/diabetes.png', 0, 0), disease('Heart Disease', 'assets/images/heart.png', 0, 0)];
   List<disease>selectedDiseases = [];
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _TrackerState extends State<Tracker> {
         documentSnapshot.data() as Map<String, dynamic>;
 
         List<disease> loadedDiseases = [
-          disease(data['name'], data['icon'])
+          disease(data['name'], data['icon'], data['maxProteinLimit'], data['maxWaterLimit'])
         ];
 
         setState(() {
@@ -53,7 +54,7 @@ class _TrackerState extends State<Tracker> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 200,
+          height: 300,
           child: ListView(
             children: <Widget>[
               for (disease d in availableDiseases)
@@ -65,12 +66,64 @@ class _TrackerState extends State<Tracker> {
                   onTap: () {
                     setState(() async {
                       if (d.name == 'Kidney Disease') {
-                        setState(() async {
-                          await diseaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).createKidneyDiseaseData(d.name, d.icon);
-                          _loadSelectedDiseases();
-                          availableDiseases.remove(d);
-                          Navigator.pop(context);
-                        });
+                        TextEditingController proteinController = TextEditingController();
+                        TextEditingController waterController = TextEditingController();
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Set Limits'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(
+                                    controller: proteinController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      labelText: 'Maximum Protein Limit',
+                                    ),
+                                  ),
+                                  TextField(
+                                    controller: waterController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      labelText: 'Maximum Water Limit(ml)',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () async {
+                                    // Save the limits to the database
+                                    await diseaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                                        .createKidneyDiseaseData(d.name, d.icon, double.parse(proteinController.text), double.parse(waterController.text));
+
+                                    // Add the disease to the availableDiseases list with user-input values
+                                    availableDiseases.add(
+                                      disease(
+                                        d.name,
+                                        d.icon,
+                                        double.parse(proteinController.text),
+                                        double.parse(waterController.text),
+                                      ),
+                                    );
+
+                                    _loadSelectedDiseases();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Save'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       }
                     });
                   },
@@ -81,6 +134,9 @@ class _TrackerState extends State<Tracker> {
       },
     );
   }
+
+
+
 
 
   @override
