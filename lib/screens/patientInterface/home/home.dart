@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:design_project_1/screens/patientInterface/chatBot/chatBotScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -6,12 +7,9 @@ import 'package:design_project_1/services/authServices/auth.dart';
 import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
-
 import '../healthTracker/tracker.dart';
-
 import '../profile/InfromationSelectionPage.dart';
 
-import '../emergencyPortal/requestEmergencyScreen.dart';
 
 
 
@@ -51,10 +49,9 @@ class _HomeState extends State<Home> {
 
 
       Tracker(),
-      RequestEmergencyScreen(),
-      Text('DoctorFinder'),
-      Text('Chat Box'),
-      Text('Profile')
+      Text("HomePage"),
+      ChatBotScreen(),
+      InformationSelectionScreen(),
 
 
     ];
@@ -64,8 +61,6 @@ class _HomeState extends State<Home> {
     return [
       PersistentBottomNavBarItem(icon: Icon(Icons.track_changes,color:Colors.indigo),
           inactiveIcon:  Icon(Icons.track_changes , color: Colors.grey)),
-      PersistentBottomNavBarItem(icon: Icon(Icons.emergency,color:Colors.indigo),
-          inactiveIcon:  Icon(Icons.emergency , color: Colors.grey)),
       PersistentBottomNavBarItem(icon: Icon(Icons.home,color:Colors.indigo),
           inactiveIcon:  Icon(Icons.home , color: Colors.grey)),
       PersistentBottomNavBarItem(icon: Icon(Icons.chat,color:Colors.indigo),
@@ -86,7 +81,7 @@ class _HomeState extends State<Home> {
           Expanded(
             child: PersistentTabView(
               context,
-              controller: PersistentTabController(initialIndex: 2),
+              controller: PersistentTabController(initialIndex: 1),
               screens: _buildScreens(),
               items: _navBarItems(),
               backgroundColor: Colors.white,

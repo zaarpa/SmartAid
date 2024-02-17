@@ -184,13 +184,6 @@ import '../../../utilities/gpt4.dart';
                 ),
               ),
               body: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.white70, Colors.blue.shade100],
-                  ),
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

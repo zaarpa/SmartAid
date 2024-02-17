@@ -154,13 +154,6 @@ class _NewFolderState extends State<NewFolder> {
         ),
       ),
       body:  Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white70, Colors.blue.shade100],
-          ),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -232,9 +225,6 @@ _createSummaryDialogueBox(summary, isLoading)    ;
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.blueGrey.withOpacity(0.5),
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: Offset(0, 2),
                               ),
                             ],
                           ),

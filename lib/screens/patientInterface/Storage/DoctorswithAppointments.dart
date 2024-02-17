@@ -80,13 +80,6 @@ class _DoctorswithAppointmentsState extends State<DoctorswithAppointments> {
         ),
       ),
           body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.white70, Colors.blue.shade100],
-              ),
-            ),
             child: Column(
               children: [
                 Padding(

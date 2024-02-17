@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:design_project_1/screens/patientInterface/healthTracker/kidneyTrackerSummary/kidneyTrackerSummaryScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:design_project_1/models/diseaseViewModel.dart';
@@ -21,6 +22,7 @@ class disease{
 class _TrackerState extends State<Tracker> {
   List<disease> availableDiseases = [disease('Kidney Disease', 'assets/images/kidney.png', 0, 0), disease('Diabetes', 'assets/images/diabetes.png', 0, 0), disease('Heart Disease', 'assets/images/heart.png', 0, 0)];
   List<disease>selectedDiseases = [];
+  String patientId = FirebaseAuth.instance.currentUser!.uid;
   @override
   void initState() {
     super.initState();
@@ -148,14 +150,6 @@ class _TrackerState extends State<Tracker> {
 
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            // colors: [Colors.white70, Colors.blue.shade200],
-            colors: [Colors.white70, Colors.blue.shade100],
-          ),
-        ),
         child: selectedDiseases.isEmpty
             ? Center(
           child: Text(
@@ -174,34 +168,9 @@ class _TrackerState extends State<Tracker> {
                 width: 100,
                 child: GestureDetector(
                   onLongPress: () {
-                    // Show delete option
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Delete Disease?'),
-                          content: Text('Are you sure you want to delete this disease?'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  availableDiseases.add(selectedDiseases[index]);
-                                  selectedDiseases.removeAt(index);
-                                  diseaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).deleteKidneyDiseaseData();
-                                });
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Delete'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Cancel'),
-                            ),
-                          ],
-                        );
-                      },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>  KidneyTrackerSummaryScreen())
                     );
                   },
                   onTap:

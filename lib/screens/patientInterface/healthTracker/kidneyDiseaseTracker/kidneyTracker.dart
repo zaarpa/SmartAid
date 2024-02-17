@@ -62,7 +62,7 @@ class _KidneyTrackerState extends State<KidneyTracker> {
     double proteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getProteinDataWithDate(formattedDate);
     print(proteinData.toString());
     setState(() {
-      proteinIntake = proteinData.toString() + 'g';
+      proteinIntake = proteinData.toStringAsFixed(2) + 'g';
     });
   }
   void loadWaterData() async {
@@ -113,13 +113,6 @@ class _KidneyTrackerState extends State<KidneyTracker> {
       ),
 
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white70, Colors.blue.shade100],
-          ),
-        ),
         child: Column(
           children: <Widget>[
             // Weekly Calendar

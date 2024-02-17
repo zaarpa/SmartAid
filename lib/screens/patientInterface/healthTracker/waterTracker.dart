@@ -33,25 +33,6 @@ class _WaterTrackerPageState extends State<WaterTrackerPage> {
       setState(() {
         maxWater = maxWaterLimit;
       });
-      // if (totalMl > maxWaterLimit) {
-      //   showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //       return AlertDialog(
-      //         title: Text('Warning'),
-      //         content: Text('You have exceeded your daily water limit'),
-      //         actions: [
-      //           TextButton(
-      //             onPressed: () {
-      //               Navigator.of(context).pop();
-      //             },
-      //             child: Text('OK'),
-      //           ),
-      //         ],
-      //       );
-      //     },
-      //   );
-      // }
     }
     catch(e){
       print(e);

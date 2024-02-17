@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:design_project_1/services/profileServices/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:design_project_1/services/trackerServices/foodSelection.dart';
@@ -20,36 +21,54 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
   String foodQuery = '';
   Map<String, dynamic>? nutritionData;
   List<String> searchResults = [];
+  Future? preexistingconditions ;
   List<Food> selectedFoods = [];
   double totalProtein = 0;
-  double maxProtein = 0;
-  int maxWater = 0;
+  late double maxProtein = 0 ;
+  late double maxWater = 0;
+  bool isLoaded = false;
   Future? loadTotalProteinFuture;
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isLoaded = false;
+    });
     loadTotalProteinFuture = loadTotalProtein();
+    loadPreexistingConditions();
 
   }
+  Future loadPreexistingConditions() async {
+    final user = FirebaseAuth.instance.currentUser;
+    return await DatabaseService(uid: user!.uid).getPreExistingConditions();
+  }
+
   Future<void> loadTotalProtein() async {
-    double proteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getProteinData();
-    setState(() {
-      totalProtein = proteinData;
-    });
-   double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxProteinLimit();
-    setState(() {
-      maxProtein = maxProteinData;
-    });
-
-    await healthTrackerService().loadSelectedFoods().then((foods) {
+    try{
+      double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxProteinLimit();
       setState(() {
-        selectedFoods = foods as List<Food>;
+        maxProtein = maxProteinData;
       });
-    });
+      double maxWaterData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxWaterLimit();
+      setState(() {
+        maxWater = maxWaterData;
+      });
+      double proteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getProteinData();
+      setState(() {
+        totalProtein = proteinData;
+      });
 
 
+      await healthTrackerService().loadSelectedFoods().then((foods) {
+        setState(() {
+          selectedFoods = foods as List<Food>;
+        });
+      });
+    }
+    catch(e){
+      print(e);
+    }
   }
-
 
 
   void updateTotalProtein() async {
@@ -57,7 +76,8 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
     for (var food in selectedFoods) {
       protein += food.protein*food.quantity;
     }
-    if(protein>maxProtein){
+
+    if(maxProtein!=null && protein>maxProtein){
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -108,18 +128,12 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
           body: SingleChildScrollView(
             child: Container(
               height: 800,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.white70, Colors.blue.shade100],
-                ),
-              ),
               child: Column(
                 children: [
                   Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Display maximum protein limit
                         Text(
@@ -128,13 +142,21 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
                         ),
                         SizedBox(width: 20), // Add some space between the text and the button
                         // "Get Diet Plan" button
-                        ElevatedButton(
+                        isLoaded
+                            ? CircularProgressIndicator()
+                            : ElevatedButton(
                           onPressed: () async {
-                            String prompt = await promptTesting('Kidney Disease', 'None', maxWater, maxProtein);
+                            setState(() {
+                              isLoaded = true;
+                            });
+                            String prompt = await generateDietPlan('Kidney Disease', preexistingconditions, maxWater, maxProtein);
+                            setState(() {
+                              isLoaded = false;
+                            });
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => DietPlanViewer(prompt: prompt),
+                                builder: (context) => DietPlanViewer(prompt: prompt,maxWaterLimit: maxWater,maxProteinLimit: maxProtein),
                               ),
                             );
                           },

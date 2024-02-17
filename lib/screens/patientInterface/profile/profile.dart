@@ -112,13 +112,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
       Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white70, Colors.blue.shade100],
-          ),
-        ),
 
         child: ChangeNotifierProvider(
           create: (_) => ProfileController(),
@@ -338,9 +331,7 @@ class ReusableRow extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.blueGrey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 2),
+
           ),
         ],
       ),

@@ -21,18 +21,11 @@ class _InformationSelectionScreenState extends State<InformationSelectionScreen>
 
       ),
     body: Container(
-    decoration: BoxDecoration(
-    gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Colors.white70, Colors.blue.shade100],
-    ),
-    ),
     child: ListView(
     children: <Widget>[
     ListTile(
     contentPadding: EdgeInsets.all(10.0),
-    tileColor: Colors.blue.shade100,
+      tileColor: Colors.grey.shade100,
     leading: Icon(Icons.account_circle,
     size: 40.0),
     title: Text('Account Information',
@@ -49,7 +42,7 @@ class _InformationSelectionScreenState extends State<InformationSelectionScreen>
 
     ListTile(
     contentPadding: EdgeInsets.all(10.0),
-    tileColor: Colors.blue.shade50,
+    tileColor: Colors.grey.shade100,
     leading: Icon(Icons.description,
     size: 40.0),
     title: Text('Reports and Prescriptions',

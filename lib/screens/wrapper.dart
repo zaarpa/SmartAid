@@ -1,6 +1,4 @@
 import 'package:design_project_1/screens/authentication/authenticate.dart';
-import 'package:design_project_1/screens/authentication/chooseRole.dart';
-import 'package:design_project_1/screens/doctorInterface/home/home.dart' as doctorHome;
 import 'package:design_project_1/screens/patientInterface/home/home.dart' as patientHome;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../models/UserModel.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:design_project_1/screens/authentication/doctorDetailsPage.dart' as doctordetails;
 import 'package:design_project_1/screens/authentication/patientDetailsPage.dart' as patientdetails;
 
 class Wrapper extends StatelessWidget {
@@ -73,21 +70,13 @@ class Wrapper extends StatelessWidget {
                     return Text('Error: ${snapshot.error}');
                   }
 
-                  if (userRole == 'doctor' && snapshot.data!.data()== null) {
-                    return doctordetails.DoctorDetailsPage();
-                  } else if (userRole == 'patient' && snapshot.data!.data()== null) {
+                  if (userRole == 'patient' && snapshot.data!.data()== null) {
                     return patientdetails.PatientDetailsPage();
                   }
-                  else if(userRole == 'patient'){
+                  else{
                     print(userRole.toString());
 
                     return patientHome.Home();
-                  }
-                  else if (userRole == 'doctor') {
-                    return doctorHome.Home();
-                  }
-                  else {
-                    return RoleSelectionPage();
                   }
                 },
               );
