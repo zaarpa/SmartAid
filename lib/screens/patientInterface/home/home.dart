@@ -11,6 +11,8 @@ import '../healthTracker/tracker.dart';
 
 import '../profile/InfromationSelectionPage.dart';
 
+import '../emergencyPortal/requestEmergencyScreen.dart';
+
 
 
 class Home extends StatefulWidget {
@@ -49,10 +51,11 @@ class _HomeState extends State<Home> {
 
 
       Tracker(),
-      Text('RequestEmergencyScreen'),
+      RequestEmergencyScreen(),
       Text('DoctorFinder'),
-     Text('Chat Box'),
-      InformationSelectionScreen(),
+      Text('Chat Box'),
+      Text('Profile')
+
 
     ];
   }

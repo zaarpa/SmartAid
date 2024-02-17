@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:design_project_1/services/authServices/auth.dart';
 import '../../../utilities/gpt4.dart' as GPT;
+import '../profile/profile.dart';
 
 void main() {
   runApp(Home());
@@ -114,8 +115,7 @@ class _HomeState extends State<Home> {
       ),
       Container(
         color: Colors.transparent,
-        // child: ProfileScreen(),
-        child: Text('Profile'),
+        child: ProfileScreen(),
       ),
 
     ];
