@@ -24,25 +24,23 @@ class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
   double totalProtein = 0;
   double maxProtein = 0;
   int maxWater = 0;
+  Future? loadTotalProteinFuture;
   @override
   void initState() {
     super.initState();
-    loadTotalProtein();
+    loadTotalProteinFuture = loadTotalProtein();
 
   }
-  void loadTotalProtein() async {
+  Future<void> loadTotalProtein() async {
     double proteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getProteinData();
     setState(() {
       totalProtein = proteinData;
     });
-double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxProteinLimit();
+   double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxProteinLimit();
     setState(() {
       maxProtein = maxProteinData;
     });
-    int maxWaterData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxWaterLimit();
-    setState(() {
-      maxWater = maxWaterData;
-    });
+
     await healthTrackerService().loadSelectedFoods().then((foods) {
       setState(() {
         selectedFoods = foods as List<Food>;
@@ -59,6 +57,25 @@ double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.cu
     for (var food in selectedFoods) {
       protein += food.protein*food.quantity;
     }
+    if(protein>maxProtein){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Warning'),
+            content: Text('You have exceeded your daily protein limit'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
     setState(() {
       totalProtein = protein;
     });
@@ -68,7 +85,15 @@ double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.cu
 
   @override
   Widget build(BuildContext context) {
-
+    return FutureBuilder(future: loadTotalProteinFuture,
+        builder: (context,snapshot){
+      if(snapshot.connectionState == ConnectionState.waiting){
+        return CircularProgressIndicator();
+      }
+      else if(snapshot.hasError){
+        return Text('Error');
+      }
+      else{
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.blue.shade900,
@@ -255,6 +280,11 @@ double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.cu
             ),
           ),
         );
+      }
+        }
+
+    );
+
   }
 }
 
