@@ -63,7 +63,7 @@ Future<String> ReportSummarizer(String url) async {
         "content": [
           {
             "type": "text",
-            "text": "What’s in this image?"
+            "text": "I am blind so i can't see what's in the image.can you please describe the content of this image?If there is an image of my medical report please simply summarize what the report indicates. Give a small summary within 5 sentences with only key points. Detailed text is difficult to understand for me."
           },
           {
             "type": "image_url",

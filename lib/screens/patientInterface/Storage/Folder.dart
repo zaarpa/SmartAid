@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:design_project_1/screens/patientInterface/Storage/Upload.dart';
+import 'package:design_project_1/utilities/gpt4.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -32,6 +33,7 @@ class _NewFolderState extends State<NewFolder> {
    List<Map<String, dynamic>> allFilesData=[];
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   List<Map<String,dynamic>> fileData =[];
+  bool isLoading = false;
 
   @override
   void initState(){
@@ -210,8 +212,13 @@ class _NewFolderState extends State<NewFolder> {
                           String fileName = allFilesData[index]['name'];
                           String fileURL = allFilesData[index]['URL'];
 
-                          _createSharedDocumentDialogueBox(fileName,fileURL);
-                        },
+                          final String summary = await ReportSummarizer(fileURL) ;
+                          setState(() {
+                            isLoading = true;
+                          });
+
+_createSummaryDialogueBox(summary, isLoading)    ;
+},
                         onLongPress: () {
                           _showDeleteConfirmationDialog(allFilesData[index]['id']);
                         },
@@ -338,39 +345,71 @@ class _NewFolderState extends State<NewFolder> {
     );
   }
 
-  Future<void> _createSharedDocumentDialogueBox(String fileName,String fileURL) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Share Document'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Share this file with your doctors.'),
-              ],
+  Future<void> _createSummaryDialogueBox(String summary, isLoading ) async {
+    if (!isLoading) {
+      // Show a circular progress indicator if loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+    } else {
+      // Show the summary in a dialogue box
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Report Summary'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text(summary),
+                ],
+              ),
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                shareDocument(fileName,fileURL);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialogue box
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
+
+
+  // Future<void> _createSummaryDialog(BuildContext context, String summary) {
+  //   return showDialog<void>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Summary'),
+  //         content: SingleChildScrollView(
+  //           child: Text(summary),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             onPressed: () {
+  //               // Navigator.of(context).pop();
+  //               Navigator.push(context, MaterialPageRoute(builder: (context) => const UploadFile()));
+  //
+  //             },
+  //             child: Text('Close'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
 
 

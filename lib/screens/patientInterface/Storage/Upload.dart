@@ -16,6 +16,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 // import '../../../models/AppointmentModel.dart';
 import '../../../services/storageServices/UploadFiles.dart';
+import '../../../utilities/gpt4.dart';
 // import '../BookAppointment/doctorFinderPage.dart';
 
         class UploadFile extends StatefulWidget {
@@ -34,7 +35,7 @@ import '../../../services/storageServices/UploadFiles.dart';
 
           final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
         List<Map<String,dynamic>> fileData =[];
-
+ bool isLoading = false;
 
           Future<void> createFolder(String folderName) async {
 
@@ -370,8 +371,11 @@ import '../../../services/storageServices/UploadFiles.dart';
                                                 String originalFileName = fileName.split('_').skip(1).join('_');
                                                 print('Tapped on file: $originalFileName, URL: $fileURL');
 
-                                                _createSharedDocumentDialogueBox(originalFileName,fileURL);
-
+                                                final String summary = await ReportSummarizer(fileURL) ;
+                                                setState(() {
+                                                  isLoading = true;
+                                                });
+                                                _createSummaryDialogueBox(summary, isLoading);
                                               },
 
                                               onLongPress: () {
@@ -591,42 +595,78 @@ import '../../../services/storageServices/UploadFiles.dart';
             );
           }
 
-          Future<void> _createSharedDocumentDialogueBox(String fileName,String fileURL) async {
-            return showDialog<void>(
-              context: context,
-              barrierDismissible: true,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Share Document'),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        Text('Share this file with your doctors.'),
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    TextButton(
-                      child: Text('OK'),
-                      onPressed: () {
-                        // Perform delete operation
-                        shareDocument(fileName,fileURL);
-                        Navigator.of(context).pop();
-                        // initState();
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          }
+          // Future<void> _createSummaryDialogueBox(String summary) async {
+          //   return showDialog<void>(
+          //     context: context,
+          //     barrierDismissible: true,
+          //     builder: (BuildContext context) {
+          //       return AlertDialog(
+          //         title: Text('Report Summary'),
+          //         content: SingleChildScrollView(
+          //           child: ListBody(
+          //             children: <Widget>[
+          //               Text(summary),
+          //             ],
+          //           ),
+          //         ),
+          //         actions: <Widget>[
+          //
+          //           TextButton(
+          //             child: Text('OK'),
+          //             onPressed: () {
+          //               // Perform delete operation
+          //               // shareDocument(fileName,fileURL);
+          //               Navigator.of(context).pop();
+          //
+          //               // initState();
+          //             },
+          //           ),
+          //         ],
+          //       );
+          //     },
+          //   );
+          // }
 
+          Future<void> _createSummaryDialogueBox(String summary, isLoading ) async {
+            if (!isLoading) {
+              // Show a circular progress indicator if loading
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
+            } else {
+              // Show the summary in a dialogue box
+              await showDialog<void>(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Report Summary'),
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: <Widget>[
+                          Text(summary),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialogue box
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          }
 
 
           Future<void> deleteFile(String fileId) async {
