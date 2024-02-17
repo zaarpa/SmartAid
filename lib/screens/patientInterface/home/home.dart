@@ -7,6 +7,9 @@ import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
 
+import '../healthTracker/tracker.dart';
+import '../profile/InfromationSelectionPage.dart';
+
 
 
 class Home extends StatefulWidget {
@@ -43,12 +46,12 @@ class _HomeState extends State<Home> {
       // RequestEmergencyScreen(),
       // DoctorFinder(),
       // AppointmentListPage(),
-      // InformationSelectionScreen(),
-      Text('Tracker'),
+
+      Tracker(),
       Text('RequestEmergencyScreen'),
       Text('DoctorFinder'),
       Text('AppointmentListPage'),
-      Text('InformationSelectionScreen'),
+      InformationSelectionScreen(),
     ];
   }
 
