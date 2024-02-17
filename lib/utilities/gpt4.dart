@@ -46,3 +46,54 @@ Future<String> promptTesting(var disease, var existingConditions ,int water_max,
     throw Exception('Failed to make POST request');
   }
 }
+
+Future<String> ReportSummarizer(String url) async {
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $openaiKey',
+  };
+
+
+
+  var body = jsonEncode({
+    "model": "gpt-4-vision-preview",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "What’s in this image?"
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": url
+            }
+          }
+        ]
+      }
+    ],
+    "temperature": 1,
+    "top_p": 1,
+    "n": 1,
+    "stream": false,
+    "max_tokens": 350,
+    "presence_penalty": 0,
+    "frequency_penalty": 0
+  });
+
+  var response = await http.post(
+    Uri.parse('https://api.openai.com/v1/chat/completions'),
+    headers: headers,
+    body: body,
+  );
+
+  if (response.statusCode == 200) {
+    var data = jsonDecode(response.body);
+    print(data['choices'][0]['message']['content']);
+    return data['choices'][0]['message']['content'];
+  } else {
+    throw Exception('Failed to make POST request');
+  }
+}
