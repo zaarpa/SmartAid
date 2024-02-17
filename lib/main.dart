@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
 
 
-        title: 'DocLinkr',
+        title: 'SmartAid',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
