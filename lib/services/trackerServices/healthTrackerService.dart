@@ -22,6 +22,14 @@ class healthTrackerService {
     waterTrackerService(uid: uid, diseaseCollection: kidneyDiseaseCollection).updateWaterData(water);
   }
 
+  Future  getMaxWaterLimit() async {
+    return waterTrackerService(uid: uid, diseaseCollection: kidneyDiseaseCollection).getMaxWaterLimit();
+  }
+  Future  getMaxProteinLimit() async {
+    print("koi ashche");
+    return proteinTrackerService(uid: uid, diseaseCollection: kidneyDiseaseCollection).getMaxProteinLimit();
+  }
+
   Future getWaterData() async {
     return waterTrackerService(uid: uid, diseaseCollection: kidneyDiseaseCollection).getWaterData();
   }

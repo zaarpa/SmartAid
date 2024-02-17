@@ -41,6 +41,9 @@ class waterTrackerService{
       return 0;
     }
   }
+  Future getMaxWaterLimit() async {
+    return await diseaseCollection!.doc(uid).get().then((value) => (value.data() as Map<String, dynamic>)['maxWaterLimit']);
+  }
 
 
   Future<int> getWaterDataWithDate(String formattedDate) async {

@@ -50,4 +50,5 @@ app.*.map.json
 /lib/services/chatServices/ServerKey.dart
 /lib/services/.gitignore
 /pubspec.lock
+/lib/utilities/gptkey.dart
 

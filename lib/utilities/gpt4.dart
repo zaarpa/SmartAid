@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'gptkey.dart' as Env;
 String openaiKey = Env.api_key;
 
-Future<String> promptTesting(var disease, var existingConditions ,int water_max,int protein_max ) async {
+Future<String> promptTesting(var disease, var existingConditions ,int water_max, double protein_max ) async {
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $openaiKey',

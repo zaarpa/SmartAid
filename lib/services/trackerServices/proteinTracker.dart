@@ -6,6 +6,11 @@ class proteinTrackerService{
   final CollectionReference? diseaseCollection;
   proteinTrackerService({this.uid, this.diseaseCollection});
 
+  Future getMaxProteinLimit() async {
+    print("koi ashche");
+    return await diseaseCollection!.doc(uid).get().then((value) => (value.data() as Map<String, dynamic>)['maxProteinLimit']);
+  }
+
   Future <void> updateProteinData(double protein) async {
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(now);
