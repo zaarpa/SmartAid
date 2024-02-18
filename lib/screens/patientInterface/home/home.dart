@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:design_project_1/screens/patientInterface/chatBot/chatBotScreen.dart';
+import 'package:design_project_1/screens/patientInterface/home/Feed.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -49,7 +50,7 @@ class _HomeState extends State<Home> {
 
 
       Tracker(),
-      Text("HomePage"),
+      Feed(),
       ChatBotScreen(),
       InformationSelectionScreen(),
 
