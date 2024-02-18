@@ -1,0 +1,315 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:design_project_1/services/profileServices/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:design_project_1/services/trackerServices/foodSelection.dart';
+import '../../../models/foodModel.dart';
+import '../../../services/trackerServices/healthTrackerService.dart';
+import '../../../utilities/gpt4.dart';
+import 'kidneyDiseaseTracker/kidneyTracker.dart';
+import 'dietPlanViewer.dart';
+
+class FoodSelectionScreen extends StatefulWidget {
+  const FoodSelectionScreen({super.key});
+
+  @override
+  State<FoodSelectionScreen> createState() => _FoodSelectionScreenState();
+}
+
+class _FoodSelectionScreenState extends State<FoodSelectionScreen> {
+  final TextEditingController foodInputController = TextEditingController();
+  String foodQuery = '';
+  Map<String, dynamic>? nutritionData;
+  List<String> searchResults = [];
+  Future? preexistingconditions ;
+  List<Food> selectedFoods = [];
+  double totalProtein = 0;
+  late double maxProtein = 0 ;
+  late double maxWater = 0;
+  bool isLoaded = false;
+  Future? loadTotalProteinFuture;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isLoaded = false;
+    });
+    loadTotalProteinFuture = loadTotalProtein();
+    loadPreexistingConditions();
+
+  }
+  Future loadPreexistingConditions() async {
+    final user = FirebaseAuth.instance.currentUser;
+    return await DatabaseService(uid: user!.uid).getPreExistingConditions();
+  }
+
+  Future<void> loadTotalProtein() async {
+    try{
+      double maxProteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxProteinLimit();
+      setState(() {
+        maxProtein = maxProteinData;
+      });
+      double maxWaterData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getMaxWaterLimit();
+      setState(() {
+        maxWater = maxWaterData;
+      });
+      double proteinData = await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).getProteinData();
+      setState(() {
+        totalProtein = proteinData;
+      });
+
+
+      await healthTrackerService().loadSelectedFoods().then((foods) {
+        setState(() {
+          selectedFoods = foods as List<Food>;
+        });
+      });
+    }
+    catch(e){
+      print(e);
+    }
+  }
+
+
+  void updateTotalProtein() async {
+    double protein = 0.0;
+    for (var food in selectedFoods) {
+      protein += food.protein*food.quantity;
+    }
+
+    if(maxProtein!=null && protein>maxProtein){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Warning'),
+            content: Text('You have exceeded your daily protein limit'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    setState(() {
+      totalProtein = protein;
+    });
+    await healthTrackerService(uid: FirebaseAuth.instance.currentUser!.uid).updateProteinData(totalProtein);
+    await healthTrackerService().saveSelectedFoods(selectedFoods);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(future: loadTotalProteinFuture,
+        builder: (context,snapshot){
+      if(snapshot.connectionState == ConnectionState.waiting){
+        return CircularProgressIndicator();
+      }
+      else if(snapshot.hasError){
+        return Text('Error');
+      }
+      else{
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.blue.shade900,
+            title: Text('Food Selection'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const KidneyTracker() ));
+              },
+            ),
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+              height: 800,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Display maximum protein limit
+                        Text(
+                          'Max Protein: ${maxProtein.toStringAsFixed(2)} g',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(width: 20), // Add some space between the text and the button
+                        // "Get Diet Plan" button
+                        isLoaded
+                            ? CircularProgressIndicator()
+                            : ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              isLoaded = true;
+                            });
+                            String prompt = await generateDietPlan('Kidney Disease', preexistingconditions, maxWater, maxProtein);
+                            setState(() {
+                              isLoaded = false;
+                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DietPlanViewer(prompt: prompt,maxWaterLimit: maxWater,maxProteinLimit: maxProtein),
+                              ),
+                            );
+                          },
+                          child: Text('Get Diet Plan'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Track today's protein intake", style: TextStyle(fontSize: 20,color: Colors.grey.shade800)),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(16.0),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.blue,
+                      radius: 100,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Total Protein',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                          Text(
+                            '${totalProtein.toStringAsFixed(2)} g',
+                            style: TextStyle(fontSize: 30, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      onChanged: (query) async {
+                        if (query.isNotEmpty) {
+                          searchResults = await searchFoods(query: query);
+                          setState(() {});
+                        }
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Search for Foods',
+
+                        suffixIcon: searchResults.isNotEmpty ? IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            // Clear the search text and results
+                            foodInputController.clear();
+                            searchResults.clear();
+                            setState(() {});
+                          },
+                        ) : null ,
+                      ),
+                    ),
+                  ),
+                  if (searchResults.isNotEmpty)
+                    Container(
+                      height: 100, // Set a fixed height for the search results container
+                      child: ListView.builder(
+                        itemCount: searchResults.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(searchResults[index]),
+                            // Add a plus icon and functionality to add the item
+                            trailing: IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () async {
+                                final foodName = searchResults[index];
+                                String foodQuery = "1 quantity of ${foodName}";
+                                double foodprotein = 0.0;
+                                if (foodQuery.isNotEmpty) {
+                                  nutritionData = await fetchNutritionData(foodQuery);
+                                  if (nutritionData != null) {
+                                    foodprotein = nutritionData!['foods'][0]['nf_protein'];
+                                  } else {
+                                    foodprotein = 0.0;
+                                  }
+                                  final foodItem =
+                                  Food(name: foodName, protein: foodprotein, quantity: 1);
+                                  selectedFoods.add(foodItem);
+                                }
+                                updateTotalProtein();
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+
+
+
+                  // Display Search Results
+
+                  // Display Selected Foods with Plus and Minus icons
+                  if (selectedFoods.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: selectedFoods.map((food) {
+                        return Card(
+                          margin: EdgeInsets.all(10),
+                          child: ListTile(
+                            title: Text(food.name),
+                            subtitle: Text('${food.quantity} serving'),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.remove),
+                                  onPressed: () {
+                                    if(food.quantity==1) {
+                                      food.quantity-=1;
+                                      setState(() {
+                                        selectedFoods.remove(food);
+                                        updateTotalProtein();
+                                      });
+                                    }
+                                    else{
+                                      food.quantity-=1;
+                                      updateTotalProtein();
+                                    }
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: () {
+                                    food.quantity+=1;
+                                    updateTotalProtein();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  // Display Nutrition Data
+
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+        }
+
+    );
+
+  }
+}
+
+
+
+// Replace fetchNutritionData and searchFoods with actual implementations

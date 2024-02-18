@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:design_project_1/screens/authentication/resetPassword.dart';
+import 'package:design_project_1/screens/wrapper.dart';
+import 'package:design_project_1/services/authServices/auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +11,8 @@ import 'firebase_options.dart';
 // import 'message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
+import 'models/UserModel.dart';
 
 
 
@@ -54,25 +59,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return StreamProvider<UserModel?>.value(
-    //   value: AuthService().user,
-    //   initialData: UserModel(uid: ''),
-    //
-    //   child: MaterialApp(
-    //
-    //
-    //     title: 'DocLinkr',
-    //     theme: ThemeData(
-    //       primarySwatch: Colors.blue,
-    //     ),
-    //     routes: {
-    //       ForgotPassword.id: (context) => const ForgotPassword(),
-    //
-    //
-    //     },
-    //     home: const Wrapper(),
-    //   ),
-    // );
+    return StreamProvider<UserModel?>.value(
+      value: AuthService().user,
+      initialData: UserModel(uid: ''),
+
+      child: MaterialApp(
+
+
+        title: 'SmartAid',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        routes: {
+          ForgotPassword.id: (context) => const ForgotPassword(),
+
+
+        },
+        home: const Wrapper(),
+      ),
+    );
     return MaterialApp(
       title: 'SmartAid',
       theme: ThemeData(
